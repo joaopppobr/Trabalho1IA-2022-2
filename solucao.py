@@ -10,9 +10,10 @@ class Nodo:
         :param acao:str, acao a partir do pai que leva a este nodo (None no caso do nó raiz)
         :param custo:int, custo do caminho da raiz até este nó
         """
-        # substitua a linha aabaixo pelo seu codigo
-        raise NotImplementedError
-
+        self.estado = estado
+        self.pai = pai
+        self.acao = acao
+        self.custo = custo
 
 def sucessor(estado):
     """
@@ -72,8 +73,18 @@ def expande(nodo):
     :param nodo: objeto da classe Nodo
     :return:
     """
-    # substituir a linha aabaixo pelo seu codigo
-    raise NotImplementedError
+    sucessores_nodo = sucessor(nodo.estado)
+    estados = {}
+    nodos = []
+    for x in sucessores_nodo:
+        mov, estado = x
+        estados[mov] = estado
+
+    for mov in estados:
+        nodos.append(Nodo(estados[mov], nodo, mov, nodo.custo + 1))
+    
+    return iter(nodos)
+    
 
 
 def bfs(estado):
@@ -127,4 +138,5 @@ def astar_manhattan(estado):
     # substituir a linha aabaixo pelo seu codigo
     raise NotImplementedError
 
-sucessor('246531_87')
+'''raiz = Nodo('246531_87', None, None, 0)
+expande(raiz)'''
