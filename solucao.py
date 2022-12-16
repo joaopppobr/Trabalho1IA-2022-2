@@ -82,8 +82,7 @@ def expande(nodo):
 
     for mov in estados:
         nodos.append(Nodo(estados[mov], nodo, mov, nodo.custo + 1))
-    
-    return iter(nodos)
+    return nodos
     
 
 
@@ -137,6 +136,3 @@ def astar_manhattan(estado):
     """
     # substituir a linha aabaixo pelo seu codigo
     raise NotImplementedError
-
-'''raiz = Nodo('246531_87', None, None, 0)
-expande(raiz)'''
