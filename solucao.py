@@ -40,8 +40,7 @@ def sucessor(estado):
         estado_alterado[estado.rfind('_') + shift] = '_'
         estado = ''.join(estado_alterado)
         return estado
-        
-    lista_estados = []
+
     posicao_vazio = estado.rfind('_')
     flags = {'flag_acima': 0, 'flag_abaixo': 0, 'flag_direita': 0, 'flag_esquerda': 0}
     sucessor = {}
@@ -74,16 +73,10 @@ def expande(nodo):
     :return:
     """
     sucessores_nodo = sucessor(nodo.estado)
-    estados = {}
     nodos = []
-    for x in sucessores_nodo:
-        mov, estado = x
-        estados[mov] = estado
-
-    for mov in estados:
-        nodos.append(Nodo(estados[mov], nodo, mov, nodo.custo + 1))
+    for s in sucessores_nodo:
+        nodos.append(Nodo(s[1], nodo, s[0], nodo.custo + 1))
     return nodos
-    
 
 
 def bfs(estado):
