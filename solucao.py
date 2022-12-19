@@ -1,3 +1,5 @@
+from collections import deque
+
 class Nodo:
     """
     Implemente a classe Nodo com os atributos descritos na funcao init
@@ -89,7 +91,31 @@ def bfs(estado):
     :return:
     """
     # substituir a linha aabaixo pelo seu codigo
-    raise NotImplementedError
+    GOAL = "12345678_"
+    explorados = set()
+    fronteira = deque([Nodo(estado, None, None, 0)])
+    # i = 0
+    while fronteira:
+        # Remove do inicio da fila
+        nodoAtual = fronteira.popleft()
+        # i += 1
+        # print(nodoAtual.estado)
+        # print(i)
+
+        # Encontrou solucao
+        if nodoAtual.estado == GOAL:
+            return pathTaken(nodoAtual)
+
+        tupla_atual = (nodoAtual.acao, nodoAtual.estado)
+        if tupla_atual not in explorados:
+            explorados.add(tupla_atual)
+            # Para cada acao possível cria um novo nodo e insere na fila
+            for acao, estado in sucessor(nodoAtual.estado):
+                fronteira.append(Nodo(estado, nodoAtual, acao, nodoAtual.custo + 1))
+
+    # Nao alcancou estado final apos buscar todos estados possiveis
+    # a partir da posicao inicial
+    return None
 
 
 def dfs(estado):
@@ -102,7 +128,31 @@ def dfs(estado):
     :return:
     """
     # substituir a linha aabaixo pelo seu codigo
-    raise NotImplementedError
+    GOAL = "12345678_"
+    explorados = set()
+    fronteira = deque([Nodo(estado, None, None, 0)])
+    # i = 0
+    while fronteira:
+        nodoAtual = fronteira.pop()
+        # i += 1
+        # print(nodoAtual.estado)
+        # print(i)
+        # time.sleep(1)
+
+        if nodoAtual.estado == GOAL:
+            return pathTaken(nodoAtual)
+
+        tupla_atual = (nodoAtual.acao, nodoAtual.estado)
+        if tupla_atual not in explorados:
+            explorados.add(tupla_atual)
+            # Para cada acao possível cria um novo nodo e insere na fila
+            for acao, estado in sucessor(nodoAtual.estado):
+                if (acao, estado) not in explorados:
+                    fronteira.append(Nodo(estado, nodoAtual, acao, nodoAtual.custo + 1))
+
+    # Nao alcancou estado final apos buscar todos estados possiveis
+    # a partir da posicao inicial
+    return None
 
 
 def astar_hamming(estado):
