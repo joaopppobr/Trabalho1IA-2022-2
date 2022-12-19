@@ -1,4 +1,6 @@
 from collections import deque
+from heapq import heapify, heappush, heappop
+import numpy as np
 
 class Nodo:
     """
@@ -16,6 +18,9 @@ class Nodo:
         self.pai = pai
         self.acao = acao
         self.custo = custo
+
+    def __lt__(self, other):
+        return self.custo < other.custo
 
 def sucessor(estado):
     """
@@ -165,7 +170,24 @@ def astar_hamming(estado):
     :return:
     """
     # substituir a linha aabaixo pelo seu codigo
-    raise NotImplementedError
+    def Hamming(estado):
+        """
+        Recebe um estado (string)
+        Retorna um inteiro representando a distancia Hamming
+        :param estado: str
+        :return:
+        Remove "_" do estado e compara com 12345678
+        """
+        estado = estado.replace("_","")
+        numeroIdeal = 1
+        erros = 0
+        for numero in estado:
+            if int(numero) != numeroIdeal :
+                erros += 1
+            numeroIdeal+=1
+        return erros
+
+    return astar_handler(estado, Hamming)
 
 
 def astar_manhattan(estado):
@@ -177,5 +199,80 @@ def astar_manhattan(estado):
     :param estado: str
     :return:
     """
-    # substituir a linha aabaixo pelo seu codigo
-    raise NotImplementedError
+    def Manhattan(estado):
+        """
+        Recebe um estado (string)
+        calcula a distancia de cada numero a sua posical ideal
+        Retorna soma todas as distancias Manhattan (int)
+        :param estado: str
+        :return:
+        """
+        # Posicao correta de cada elemento
+        posicaoCorretaNumero = {'1': (0, 0), '2': (0, 1), '3': (0, 2), '4': (1, 0), '5': (1, 1), '6': (1, 2), '7': (2, 0), '8': (2, 1), '_': (2, 2)}
+        # Transforma a string em um array (3,3)
+        estado = np.asarray(list(estado)).reshape(3,3)
+
+        # Compara o indice atual com indice de onde deveria estar
+        distancia = 0
+        for linha in range(3):
+            for coluna in range(3):
+                numeroAtual = estado[linha][coluna]
+                # Cria uma tupla com a distancia manhatan (x,y) do numero atual
+                # Soma x + y para obter a distancia final
+                # Acumula a distancia de todas posicoes
+                distancia += sum(tuple(map(lambda posicaoCorreta,posicaoAtual: abs(posicaoCorreta - posicaoAtual), posicaoCorretaNumero[numeroAtual],(linha, coluna))))
+        return distancia
+
+    return astar_handler(estado, Manhattan)
+    
+
+######################
+# Funções Auxiliares #
+######################
+
+def astar_handler(estado, distanceCalc):
+    """
+    estado: str
+    distanceCalc: funcao a ser utilizada para calcular a distancia de um estado ao
+    estado final
+    """
+    explorados = set()
+    fronteira = [ Nodo(estado, None, None, distanceCalc(estado)) ]
+    heapify(fronteira)
+    while fronteira:
+        nodoAtual = heappop(fronteira)
+
+        # Encontrou solucao
+        if isFinalState(nodoAtual.estado): return pathTaken(nodoAtual)
+
+        tupla_atual = (nodoAtual.acao, nodoAtual.estado)
+        if tupla_atual not in explorados:
+            explorados.add(tupla_atual)
+            # Para cada acao possível cria um novo nodo e insere na fila
+            for acao, estado in sucessor(nodoAtual.estado):
+                heappush(fronteira, Nodo(estado, nodoAtual, acao, nodoAtual.custo + distanceCalc(estado)) )
+    return None
+
+
+def isFinalState(estado):
+  return estado == "12345678_"
+
+
+def pathTaken(nodo):
+    """
+    Recebe nodo
+    Retorna uma lista de ações tomadas para se chegar ao nodo
+    :param nodo: Nodo
+    :return:
+    """
+    path = []
+    # Vai de pai em pai gravando a acao tomada
+    while nodo:
+      path.append(nodo.acao)
+      nodo = nodo.pai
+
+    # Remove a acao None
+    if path: 
+      path.pop() 
+    # Inverte a ordem das acoes
+    return list(reversed(path))
